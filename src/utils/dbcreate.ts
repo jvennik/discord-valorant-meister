@@ -1,9 +1,9 @@
-import { run } from "./dbrun";
+import { run } from './dbrun';
 
 const playerSql = `
     CREATE TABLE IF NOT EXISTS players (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      guild INTEGER NOT NULL,
+      guild VARCHAR(255) NOT NULL,
       name TEXT NOT NULL,
       discord_id TEXT NOT NULL,
       rank TEXT NOT NULL
@@ -13,7 +13,7 @@ const playerSql = `
 const eventSql = `
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      guild INTEGER NOT NULL,
+      guild VARCHAR(255) NOT NULL,
       name TEXT NOT NULL,
       owner INTEGER NOT NULL,
       emoji TEXT NOT NULL,
@@ -33,10 +33,14 @@ const eventPlayersSql = `
     )
     `;
 
-export const DBCreate = async function createdb() {
-  run(playerSql);
-  run(eventSql);
-  run(eventPlayersSql);
+export const DBCreate = async function createdb(): Promise<void> {
+  try {
+    await run({ sql: playerSql });
+    await run({ sql: eventSql });
+    await run({ sql: eventPlayersSql });
+  } catch (e) {
+    console.error('Something went wrong creating the database', e);
+  }
 };
 
 export default DBCreate;
