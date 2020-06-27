@@ -1,5 +1,3 @@
-import Player from './Player';
-
 export default interface Event {
   id: string;
   guild: string;
