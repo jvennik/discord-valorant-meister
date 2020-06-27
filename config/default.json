@@ -1,0 +1,9 @@
+{
+  "general": {
+    "commandPrefix": "!valorant",
+    "botToken": "",
+    "botUserName": "valorant-meister",
+    "dbPath": "db.sqlite3"
+  },
+  "authorizedRoles": ["Admin", "Mod"]
+}
