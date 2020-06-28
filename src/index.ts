@@ -108,7 +108,7 @@ client.on('message', async (msg) => {
     const response = await leaveEvent({
       discordId: msg.member.id,
     });
-    msg.channel.send(response);
+    msg.channel.send(response.msg);
   }
 });
 
