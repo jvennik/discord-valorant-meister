@@ -1,10 +1,16 @@
-import { db } from "../db";
+import { db } from '../db';
 
-export const dball = async function dball(sql, params = []) {
+export const dball = async function dball<T>({
+  sql,
+  params = [],
+}: {
+  sql: string;
+  params?: (string | number)[];
+}): Promise<T[]> {
   return new Promise((resolve, reject) => {
     db.all(sql, params, (err, row) => {
       if (err) {
-        console.log("Error running sql: " + sql);
+        console.log('Error running sql: ' + sql);
         console.log(err);
         reject(err);
       } else {
