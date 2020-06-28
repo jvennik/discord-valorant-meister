@@ -31,7 +31,6 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "config": "^1.30.0",
     "discord.js": "^11.6.4",
     "sqlite3": "^4.1.1"
   },
