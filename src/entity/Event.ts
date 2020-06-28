@@ -31,4 +31,8 @@ export class Event {
 
   @OneToMany(() => Player, (player) => player.joinedEvent)
   public players: Player[];
+
+  constructor(init?: Partial<Event>) {
+    Object.assign(this, init);
+  }
 }

@@ -17,10 +17,11 @@ export const createPlayer = async function createPlayer({
     });
 
     if (!playerExists) {
-      const newPlayer = new Player();
-      newPlayer.name = name;
-      newPlayer.discordId = discordId;
-      newPlayer.rank = rank;
+      const newPlayer = new Player({
+        name,
+        discordId,
+        rank,
+      });
       await playerRepository.save(newPlayer);
     }
   } catch (e) {

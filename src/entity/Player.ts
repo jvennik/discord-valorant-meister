@@ -14,4 +14,8 @@ export class Player {
 
   @ManyToOne(() => Event, (event) => event.players, { onDelete: 'SET NULL' })
   public joinedEvent: Event;
+
+  constructor(init?: Partial<Player>) {
+    Object.assign(this, init);
+  }
 }

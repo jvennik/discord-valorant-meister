@@ -58,13 +58,14 @@ export const createEvent = async function createEvent({
 
   if (newEventNumber <= 10) {
     const emoji = numberToEmoji[newEventNumber];
-    const newEvent = new Event();
-    newEvent.guildId = guildId;
-    newEvent.name = name;
-    newEvent.emoji = emoji;
-    newEvent.rank = 'iron1';
-    newEvent.owner = player;
-    newEvent.players = [player];
+    const newEvent = new Event({
+      guildId,
+      name,
+      emoji,
+      rank: 'iron1',
+      owner: player,
+      players: [player],
+    });
     await eventRepository.save(newEvent);
   } else {
     // Limit server to 10 events for now
