@@ -8,9 +8,8 @@ import { DBCreate } from './utils/dbcreate';
 // import { setupAddEmojiCollector } from './collectors/setup-add-emoji-collector.js';
 // import { setupRemoveEmojiCollector } from './collectors/setup-remove-emoji-collector.js';
 
-// Setup config & Discord client
-import config from 'config';
 import Discord, { TextChannel } from 'discord.js';
+import config from './config';
 
 // Actions / supporting
 import { createPlayer } from './utils/create-player';
@@ -20,10 +19,10 @@ import { joinEvent, JOIN_RESULT } from './actions/join';
 import { leaveEvent } from './actions/leave';
 
 const client = new Discord.Client();
-const prefix = config.get('general.commandPrefix');
+const prefix = config.general.commandPrefix;
 
 client.on('ready', async () => {
-  client.user.setUsername(config.get('general.botUsername'));
+  client.user.setUsername(config.general.botUsername);
   await DBCreate();
 
   console.log('Ready');
@@ -117,5 +116,5 @@ client.on('message', async (msg) => {
   }
 });
 
-client.login(config.get('general.botToken'));
+client.login(config.general.botToken);
 console.log('Logged in');
