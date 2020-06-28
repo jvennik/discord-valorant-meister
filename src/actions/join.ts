@@ -44,7 +44,7 @@ export const joinEvent = async function joinEvent({
 }: {
   guildId: string;
   discordId: string;
-  emoji: string[];
+  emoji: string;
 }): Promise<JOIN_RESULT> {
   const playerRepository = getRepository(Player);
   const eventRepository = getRepository(Event);
@@ -58,8 +58,10 @@ export const joinEvent = async function joinEvent({
   }
 
   const event = await eventRepository.findOne({
-    where: { emoji: emoji.toString(), guildId },
+    where: { emoji, guildId },
+    relations: ['players'],
   });
+
   if (!event) {
     console.log('Event does not exist');
     return JOIN_RESULT.EVENT_DOES_NOT_EXIST;
