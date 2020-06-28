@@ -13,3 +13,4 @@ services:
       - BOT_TOKEN=YOUR_TOKEN
       - BOT_COMMAND_PREFIX=!valorant
       - AUTHORIZED_ROLES=Admin,Mod
+      - TYPEORM_DATABASE=db/db.sqlite3

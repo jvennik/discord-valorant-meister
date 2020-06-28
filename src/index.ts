@@ -1,9 +1,3 @@
-// Utils
-import { guildDelete } from './utils/guilddelete';
-
-// DB imports
-import { DBCreate } from './utils/dbcreate';
-
 // Emoji collectors
 // import { setupAddEmojiCollector } from './collectors/setup-add-emoji-collector.js';
 // import { setupRemoveEmojiCollector } from './collectors/setup-remove-emoji-collector.js';
@@ -12,29 +6,24 @@ import Discord, { TextChannel } from 'discord.js';
 import config from './config';
 
 // Actions / supporting
-import { createPlayer } from './utils/create-player';
 import { createEvent, EVENT_RESULT } from './actions/create';
 import { getEventsDetails } from './actions/report';
 import { joinEvent, JOIN_RESULT } from './actions/join';
 import { leaveEvent } from './actions/leave';
+import { createConnection } from 'typeorm';
+import createPlayer from './utils/create-player';
 
 const client = new Discord.Client();
 const prefix = config.general.commandPrefix;
 
 client.on('ready', async () => {
   client.user.setUsername(config.general.botUsername);
-  await DBCreate();
 
   console.log('Ready');
 });
 
 client.on('error', async () => {
   // Add error logging
-});
-
-client.on('guildDelete', async (guild) => {
-  console.log('Deleting guild: ' + guild.name);
-  await guildDelete(guild.id);
 });
 
 client.on('message', async (msg) => {
@@ -48,12 +37,13 @@ client.on('message', async (msg) => {
 
   if (msg.content.startsWith(`${prefix} create`)) {
     const eventName = msg.content.split(' ').slice(2).join('-');
+
     await createPlayer({
-      guildId: msg.guild.id,
       name: msg.member.displayName,
       discordId: msg.member.id,
       rank: 'iron1',
     });
+
     const response = await createEvent({
       guildId: msg.guild.id,
       name: eventName,
@@ -79,11 +69,11 @@ client.on('message', async (msg) => {
   if (msg.content.startsWith(`${prefix} join`)) {
     const emoji = msg.content.split(' ').slice(-1);
     await createPlayer({
-      guildId: msg.guild.id,
       name: msg.member.displayName,
       discordId: msg.member.id,
       rank: 'iron1',
     });
+
     const didJoin = await joinEvent({
       guildId: msg.guild.id,
       discordId: msg.member.id,
@@ -109,12 +99,12 @@ client.on('message', async (msg) => {
 
   if (msg.content.startsWith(`${prefix} leave`)) {
     const response = await leaveEvent({
-      guildId: msg.guild.id,
       discordId: msg.member.id,
     });
     msg.channel.send(response);
   }
 });
 
+createConnection();
 client.login(config.general.botToken);
 console.log('Logged in');

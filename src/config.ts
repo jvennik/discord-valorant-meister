@@ -3,7 +3,6 @@ interface Config {
     commandPrefix: string;
     botToken?: string;
     botUsername: string;
-    dbPath: string;
   };
   authorizedRoles: string[];
 }
@@ -20,7 +19,6 @@ const config: Config = {
     commandPrefix: process.env.BOT_COMMAND_PREFIX ?? '!valorant',
     botToken: process.env.BOT_TOKEN,
     botUsername: process.env.BOT_USERNAME ?? 'valorant-meister',
-    dbPath: process.env.DB_PATH ?? 'db/db.sqlite3',
   },
   authorizedRoles: loadAuthorizedRoles(),
 };

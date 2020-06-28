@@ -1,7 +1,6 @@
-import { run } from '../utils/dbrun';
-import { dbget } from '../utils/dbget';
-import { getPlayer } from '../utils/get-player';
-import { getEvent } from '../utils/get-event';
+import { getRepository } from 'typeorm';
+import { Player } from '../entity/Player';
+import { Event } from '../entity/Event';
 
 const numberToEmoji = {
   0: '0️⃣',
@@ -16,16 +15,6 @@ const numberToEmoji = {
   9: '9️⃣',
   10: '🔟',
 };
-
-const eventCountSql = `SELECT COUNT(id) AS count FROM events WHERE guild = ?`;
-
-const createEventSql = `
-  INSERT INTO events (guild, name, owner, emoji) VALUES (?, ?, ?, ?);
-`;
-
-const addOwnerSql = `
-  INSERT INTO events_players (event_id, player_id) VALUES (?, ?);
-`;
 
 export enum EVENT_RESULT {
   CREATED,
@@ -42,32 +31,42 @@ export const createEvent = async function createEvent({
   name: string;
   owner: string;
 }): Promise<EVENT_RESULT> {
-  const player = await getPlayer({ guildId, discordId: owner });
+  const playerRepository = getRepository(Player);
+  const eventRepository = getRepository(Event);
+  const player = await playerRepository.findOne({
+    where: { discordId: owner },
+  });
+
+  if (!player) {
+    throw new Error(
+      `Player not found during create event process ID: ${owner}`
+    );
+  }
 
   // Check if player already owns an event
-  let event = await getEvent({ guildId, owner: player.id });
-  if (event) {
+  const eventExists = await eventRepository.count({
+    where: { guildId, owner: player },
+  });
+  if (eventExists) {
     // Limiting players to a single event
     console.log('Player already owns an event');
     return EVENT_RESULT.ALREADY_OWNED;
   }
 
-  const eventCount = await dbget<{ count: number }>({
-    sql: eventCountSql,
-    params: [guildId],
-  });
-  const newEventNumber = eventCount.count as keyof typeof numberToEmoji;
+  const guildEventCount = await eventRepository.count({ where: guildId });
+  const newEventNumber = guildEventCount as keyof typeof numberToEmoji;
 
   if (newEventNumber <= 10) {
     const emoji = numberToEmoji[newEventNumber];
-    await run({
-      sql: createEventSql,
-      params: [guildId, name, player.id, emoji],
+    const newEvent = new Event({
+      guildId,
+      name,
+      emoji,
+      rank: 'iron1',
+      owner: player,
+      players: [player],
     });
-
-    event = await getEvent({ guildId, owner: player.id });
-    // Add owner to event
-    await run({ sql: addOwnerSql, params: [event.id, player.id] });
+    await eventRepository.save(newEvent);
   } else {
     // Limit server to 10 events for now
     return EVENT_RESULT.MAX;

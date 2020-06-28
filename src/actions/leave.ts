@@ -1,90 +1,58 @@
-import { run } from '../utils/dbrun';
-import { dbget } from '../utils/dbget';
-import { getPlayer } from '../utils/get-player';
-import Event from '../models/Event';
-import Player from '../models/Player';
-
-const playerEventSql = `
-  SELECT e.id, e.name, e.owner
-  FROM events_players AS ep
-  JOIN events AS e ON ep.event_id = e.id
-  JOIN players AS p ON ep.player_id = p.id
-  WHERE p.id = ?
-`;
-
-const eventPlayersSql = `
-  SELECT group_concat(p.name) AS players
-  FROM events_players AS ep
-  JOIN players AS p ON ep.player_id = p.id
-  WHERE ep.event_id = ?
-  ORDER BY ep.id
-`;
-
-const removePlayerSql = `
-  DELETE FROM events_players WHERE player_id = ?
-`;
-
-// const deleteEventSql = `
-//   DELETE FROM events WHERE id = ?;
-// `;
-
-const getPlayerByNameSql = `
-  SELECT id
-  FROM players
-  WHERE guild = ? AND name = ?;
-`;
-
-const transferOwnerSql = `
-  UPDATE events SET owner = ?
-  WHERE guild = ? AND id = ?
-`;
+import { getRepository } from 'typeorm';
+import { Event } from '../entity/Event';
+import { Player } from '../entity/Player';
 
 export const leaveEvent = async function leaveEvent({
-  guildId,
   discordId,
 }: {
-  guildId: string;
   discordId: string;
 }): Promise<string> {
-  const player = await getPlayer({ guildId, discordId });
-  const event = await dbget<Event>({
-    sql: playerEventSql,
-    params: [player.id],
+  const playerRepository = getRepository(Player);
+  const eventRepository = getRepository(Event);
+  const player = await playerRepository.findOne({
+    where: { discordId },
+    relations: ['joinedEvent', 'joinedEvent.players', 'joinedEvent.owner'],
   });
 
-  if (event.owner === player.id) {
+  if (!player) {
+    throw new Error('Player data missing when calling leave event');
+  }
+
+  if (!player.joinedEvent) {
+    return 'You are not currently in an event.';
+  }
+
+  if (player.joinedEvent.owner.id === player.id) {
     // Owner is leaving, switch ownership to next player
-    const eventPlayers = await dbget<Event>({
-      sql: eventPlayersSql,
-      params: [event.id],
-    });
-    const names = eventPlayers.players.split(',');
-    if (names.length === 1) {
-      // No one left, delete event
-      // run(deleteEventSql, [event.id]);
-      return `**${event.name}** has been removed`;
+    if (player.joinedEvent.players.length === 1) {
+      await eventRepository.delete(player.joinedEvent.id);
+      return `**${player.joinedEvent.name}** has been removed`;
     } else {
-      names.splice(names.indexOf(player.name, 1));
-      const newOwner = names[0];
-      const newOwnerPlayer = await dbget<Player>({
-        sql: getPlayerByNameSql,
-        params: [guildId, newOwner],
-      });
+      const newOwner = player.joinedEvent.players.find(
+        (p) => p.id !== player.id
+      );
+      const newPlayers = player.joinedEvent.players.filter(
+        (p) => p.id !== player.id
+      );
 
-      await run({
-        sql: transferOwnerSql,
-        params: [newOwnerPlayer.id, guildId, event.id],
-      });
-      await run({ sql: removePlayerSql, params: [player.id] });
+      if (!newOwner || newPlayers.length === 0) {
+        await eventRepository.delete(player.joinedEvent);
+        return `**${player.joinedEvent.name}** has been removed`;
+      }
+      player.joinedEvent.players = newPlayers;
+      player.joinedEvent.owner = newOwner;
 
-      let msg = `**${player.name}** has left event: **${event.name}**.\n`;
+      let msg = `**${player.name}** has left event: **${player.joinedEvent.name}**.\n`;
       msg += `Ownership transferred to: **${newOwner}**`;
       return msg;
     }
   }
-
-  await run({ sql: removePlayerSql, params: [player.id] });
-  return `**${player.name}** has left group: **${event.name}**`;
+  const newPlayers = player.joinedEvent.players.filter(
+    (p) => player.id !== p.id
+  );
+  player.joinedEvent.players = newPlayers;
+  eventRepository.save(newPlayers);
+  return `**${player.name}** has left group: **${player.joinedEvent.name}**`;
 };
 
 export default leaveEvent;

@@ -1,17 +1,6 @@
-import { dball } from '../utils/dball';
 import { EmbedField, TextChannel } from 'discord.js';
-import Event from '../models/Event';
-
-const getEventsDetailsSql = `
-  SELECT e.name, e.emoji, (
-    SELECT group_concat(p.name)
-      FROM events_players AS ep
-      JOIN players AS p ON ep.player_id = p.id
-      WHERE ep.event_id = e.id
-  ) AS players
-  FROM events AS e
-  WHERE e.guild = ?
-`;
+import { getRepository } from 'typeorm';
+import { Event } from '../entity/Event';
 
 export const getEventsDetails = async function getEventsDetails({
   guildId,
@@ -20,19 +9,19 @@ export const getEventsDetails = async function getEventsDetails({
   guildId: string;
   channel: TextChannel;
 }): Promise<void> {
-  const events = await dball<Event>({
-    sql: getEventsDetailsSql,
-    params: [guildId],
+  const eventRepository = getRepository(Event);
+  const events = await eventRepository.find({
+    where: { guildId },
+    relations: ['players'],
   });
 
   const fields: EmbedField[] = [];
   events.forEach((event) => {
-    const number = event.players.split(',').length;
-    const players = event.players.split(',').join(', ');
+    const players = event.players.map((p) => p.name).join(', ');
 
     fields.push({
       name: `${event.emoji} ${event.name}`,
-      value: `${number}/5 - ${players}`,
+      value: `${event.players.length}/5 - ${players}`,
       inline: false,
     });
   });
