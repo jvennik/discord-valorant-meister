@@ -17,7 +17,9 @@ const client = new Discord.Client();
 const prefix = config.general.commandPrefix;
 
 client.on('ready', async () => {
-  client.user.setUsername(config.general.botUsername);
+  if (client.user) {
+    client.user.setUsername(config.general.botUsername);
+  }
 
   console.log('Ready');
 });
@@ -34,6 +36,11 @@ client.on('message', async (msg) => {
   // - leave
   // - delete
   // - groups
+
+  if (!msg.member || !msg.guild) {
+    console.log('Member or guild missing from message data');
+    return;
+  }
 
   if (msg.content.startsWith(`${prefix} create`)) {
     const eventName = msg.content.split(' ').slice(2).join('-');
@@ -77,7 +84,7 @@ client.on('message', async (msg) => {
     const didJoin = await joinEvent({
       guildId: msg.guild.id,
       discordId: msg.member.id,
-      emoji,
+      emoji: emoji.toString(),
     });
 
     if (didJoin === JOIN_RESULT.JOINED) {
@@ -100,8 +107,9 @@ client.on('message', async (msg) => {
   if (msg.content.startsWith(`${prefix} leave`)) {
     const response = await leaveEvent({
       discordId: msg.member.id,
+      guildId: msg.guild.id,
     });
-    msg.channel.send(response);
+    msg.channel.send(response.msg);
   }
 });
 
