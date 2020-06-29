@@ -107,6 +107,7 @@ client.on('message', async (msg) => {
   if (msg.content.startsWith(`${prefix} leave`)) {
     const response = await leaveEvent({
       discordId: msg.member.id,
+      guildId: msg.guild.id,
     });
     msg.channel.send(response.msg);
   }

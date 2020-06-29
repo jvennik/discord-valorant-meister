@@ -11,8 +11,10 @@ export enum LEAVE_RESULT {
 
 export const leaveEvent = async function leaveEvent({
   discordId,
+  guildId,
 }: {
   discordId: string;
+  guildId: string;
 }): Promise<{ result: LEAVE_RESULT; msg: string }> {
   const playerRepository = getRepository(Player);
   const eventRepository = getRepository(Event);
@@ -25,7 +27,7 @@ export const leaveEvent = async function leaveEvent({
     throw new Error('Player data missing when calling leave event');
   }
 
-  if (!player.joinedEvent) {
+  if (!player.joinedEvent || player.joinedEvent.guildId !== guildId) {
     return {
       result: LEAVE_RESULT.NOT_IN_EVENT,
       msg: 'You are not currently in an event.',

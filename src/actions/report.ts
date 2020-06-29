@@ -4,6 +4,7 @@ import { Event } from '../entity/Event';
 import { createEmbed } from '../utils/create-embed';
 import joinEvent, { JOIN_RESULT } from './join';
 import leaveEvent, { LEAVE_RESULT } from './leave';
+import { Player } from '../entity/Player';
 
 export const getEventsDetails = async function getEventsDetails({
   guildId,
@@ -54,10 +55,22 @@ export const getEventsDetails = async function getEventsDetails({
       }
     });
 
-    collector.on('remove', async (_reaction, user) => {
-      console.log('removed');
+    collector.on('remove', async (reaction, user) => {
+      const playerRepository = getRepository(Player);
+
+      const player = await playerRepository.findOne({
+        where: { discordId: user.id },
+        relations: ['joinedEvent'],
+      });
+
+      // if there is no player info or if the emoji being removed doesnt match, do nothing
+      if (!player || player.joinedEvent.emoji !== reaction.emoji.name) {
+        return;
+      }
+
       const leave = await leaveEvent({
         discordId: user.id,
+        guildId,
       });
 
       if (
