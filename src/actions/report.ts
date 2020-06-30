@@ -5,6 +5,7 @@ import { createEmbed } from '../utils/create-embed';
 import joinEvent, { JOIN_RESULT } from './join';
 import leaveEvent, { LEAVE_RESULT } from './leave';
 import { Player } from '../entity/Player';
+import logger from '../logger';
 
 export const getEventsDetails = async function getEventsDetails({
   guildId,
@@ -101,6 +102,6 @@ export const getEventsDetails = async function getEventsDetails({
       await posted.reactions.removeAll();
     });
   } catch (e) {
-    console.error('Something went wrong posting message', e);
+    logger.error('Something went wrong posting message', e);
   }
 };

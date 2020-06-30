@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
 import { Player } from '../entity/Player';
 import { Event } from '../entity/Event';
+import logger from '../logger';
 
 const numberToEmoji = {
   0: '0️⃣',
@@ -49,7 +50,7 @@ export const createEvent = async function createEvent({
   });
   if (eventExists) {
     // Limiting players to a single event
-    console.log('Player already owns an event');
+    logger.info('Player already owns an event');
     return EVENT_RESULT.ALREADY_OWNED;
   }
 
