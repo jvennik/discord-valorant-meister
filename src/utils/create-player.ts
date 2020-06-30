@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm';
 import { Player } from '../entity/Player';
+import logger from '../logger';
 
 export const createPlayer = async function createPlayer({
   name,
@@ -25,7 +26,7 @@ export const createPlayer = async function createPlayer({
       await playerRepository.save(newPlayer);
     }
   } catch (e) {
-    console.error('Something went wrong creating a player', e);
+    logger.error('Something went wrong creating a player', e);
   }
 };
 

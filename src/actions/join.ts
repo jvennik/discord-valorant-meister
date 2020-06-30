@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
 import { Player } from '../entity/Player';
 import { Event } from '../entity/Event';
+import logger from '../logger';
 
 const ranks = [
   'iron1',
@@ -63,12 +64,12 @@ export const joinEvent = async function joinEvent({
   });
 
   if (!event) {
-    console.log('Event does not exist');
+    logger.info('Event does not exist');
     return JOIN_RESULT.EVENT_DOES_NOT_EXIST;
   }
 
   if (player?.joinedEvent) {
-    console.log('Player in event already!');
+    logger.info('Player in event already!');
     return JOIN_RESULT.ALREADY_JOINED;
   }
 
@@ -87,7 +88,7 @@ export const joinEvent = async function joinEvent({
   const rankRange = ranks.slice(minIndex, maxIndex);
 
   if (rankRange.indexOf(player.rank) < 0) {
-    console.log('Player rank not in range!');
+    logger.info('Player rank not in range!');
     return JOIN_RESULT.OUT_OF_RANK_RANGE;
   }
 

@@ -11,6 +11,7 @@ services:
       - TZ=Asia/Tokyo
       - BOT_USERNAME=valorant-meister
       - BOT_TOKEN=YOUR_TOKEN
+      - BOT_OWNER_ID=OWNER_ID
       - BOT_COMMAND_PREFIX=!valorant
       - AUTHORIZED_ROLES=Admin,Mod
       - TYPEORM_DATABASE=db/db.sqlite3
