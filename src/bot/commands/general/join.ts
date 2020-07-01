@@ -2,6 +2,7 @@ import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import createPlayer from '../../../utils/create-player';
 import joinEvent, { JOIN_RESULT } from '../../../actions/join';
 import { Message } from 'discord.js';
+import { isBound } from '../../../utils/isBound';
 
 export default class JoinCommand extends Command {
   public constructor(client: CommandoClient) {
@@ -24,6 +25,12 @@ export default class JoinCommand extends Command {
     msg: CommandoMessage,
     { emoji }: { emoji: string }
   ): Promise<Message> {
+    const bindResult = await isBound(msg);
+    if (!bindResult) {
+      return msg.channel.send(
+        'This bot is not yet configured. You must first bind the bot to a channel with `!valorant bind`'
+      );
+    }
     await createPlayer({
       name: msg.member.displayName,
       discordId: msg.member.id,
