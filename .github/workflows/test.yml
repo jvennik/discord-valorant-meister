@@ -1,6 +1,12 @@
-name: Tests
+name: CI/CD
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches:
+      - develop
 
 jobs:
   test:
@@ -13,3 +19,17 @@ jobs:
           yarn
           yarn run test
           yarn run build
+  build:
+    needs: test
+    runs-on: ubuntu-18.04
+    # if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build image and Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: docker.pkg.github.com/jvennik/discord-valorant-meister/valorant-meister
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          tags: latest,${{ github.sha }}
