@@ -38,7 +38,7 @@ export enum JOIN_RESULT {
   OTHER_EVENT,
 }
 
-export const joinEvent = async function joinEvent({
+export const joinEvent = async ({
   guildId,
   discordId,
   emoji,
@@ -46,7 +46,7 @@ export const joinEvent = async function joinEvent({
   guildId: string;
   discordId: string;
   emoji: string;
-}): Promise<JOIN_RESULT> {
+}): Promise<JOIN_RESULT> => {
   const playerRepository = getRepository(Player);
   const eventRepository = getRepository(Event);
   const player = await playerRepository.findOne({

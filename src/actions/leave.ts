@@ -9,13 +9,13 @@ export enum LEAVE_RESULT {
   EVENT_REMOVED,
 }
 
-export const leaveEvent = async function leaveEvent({
+export const leaveEvent = async ({
   discordId,
   guildId,
 }: {
   discordId: string;
   guildId: string;
-}): Promise<{ result: LEAVE_RESULT; msg: string }> {
+}): Promise<{ result: LEAVE_RESULT; msg: string }> => {
   const playerRepository = getRepository(Player);
   const eventRepository = getRepository(Event);
   const player = await playerRepository.findOne({

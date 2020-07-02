@@ -23,7 +23,7 @@ export enum EVENT_RESULT {
   ALREADY_OWNED,
 }
 
-export const createEvent = async function createEvent({
+export const createEvent = async ({
   guildId,
   name,
   owner,
@@ -31,7 +31,7 @@ export const createEvent = async function createEvent({
   guildId: string;
   name: string;
   owner: string;
-}): Promise<EVENT_RESULT> {
+}): Promise<EVENT_RESULT> => {
   const playerRepository = getRepository(Player);
   const eventRepository = getRepository(Event);
   const player = await playerRepository.findOne({

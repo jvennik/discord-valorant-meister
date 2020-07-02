@@ -7,13 +7,13 @@ import leaveEvent, { LEAVE_RESULT } from './leave';
 import { Player } from '../entity/Player';
 import logger from '../logger';
 
-export const getEventsDetails = async function getEventsDetails({
+export const getEventsDetails = async ({
   guildId,
   channel,
 }: {
   guildId: string;
   channel: TextChannel;
-}): Promise<void> {
+}): Promise<void> => {
   const eventRepository = getRepository(Event);
   const events = await eventRepository.find({
     where: { guildId },
