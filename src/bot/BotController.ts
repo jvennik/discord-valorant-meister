@@ -34,9 +34,9 @@ export class BotController {
     });
 
     this.client.on('message', (msg: Message) => {
-      const channel = msg.channel as TextChannel;
+      const channel = msg.channel;
       const guild = msg.guild;
-      if (channel && guild && this.client.user) {
+      if (channel instanceof TextChannel && guild && this.client.user) {
         periodicMessage({
           guildId: guild.id,
           channel: channel,
