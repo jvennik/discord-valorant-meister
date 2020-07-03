@@ -9,9 +9,11 @@ import logger from '../logger';
 export const periodicMessage = async ({
   guildId,
   channel,
+  botId,
 }: {
   guildId: string;
   channel: TextChannel;
+  botId: string;
 }): Promise<void> => {
   const guildRepository = getRepository(Guild);
   const guild = await guildRepository.findOne({
@@ -41,7 +43,7 @@ export const periodicMessage = async ({
   });
 
   const recentBotMessage = latestMessages.find(
-    (msg) => msg.author.username === config.general.botUsername
+    (msg) => msg.author.id === botId
   );
 
   let shouldSend = true;
