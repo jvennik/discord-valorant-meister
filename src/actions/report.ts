@@ -1,4 +1,4 @@
-import { TextChannel, MessageReaction } from 'discord.js';
+import { TextChannel, MessageReaction, Message } from 'discord.js';
 import { getRepository } from 'typeorm';
 import { Event } from '../entity/Event';
 import { createEmbed } from '../utils/create-embed';
@@ -13,7 +13,7 @@ export const getEventsDetails = async ({
 }: {
   guildId: string;
   channel: TextChannel;
-}): Promise<void> => {
+}): Promise<Message | undefined> => {
   const eventRepository = getRepository(Event);
   const events = await eventRepository.find({
     where: { guildId },
@@ -101,7 +101,9 @@ export const getEventsDetails = async ({
     collector.on('end', async () => {
       await posted.reactions.removeAll();
     });
+    return posted;
   } catch (e) {
     logger.error('Something went wrong posting message', e);
   }
+  return;
 };

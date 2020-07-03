@@ -6,6 +6,10 @@ interface Config {
     botUsername: string;
   };
   authorizedRoles: string[];
+  events: {
+    messageLimit: string;
+    minutesBetweenReports: string;
+  };
 }
 
 const loadAuthorizedRoles = (): string[] => {
@@ -23,6 +27,10 @@ const config: Config = {
     ownerId: process.env.BOT_OWNER_ID,
   },
   authorizedRoles: loadAuthorizedRoles(),
+  events: {
+    messageLimit: process.env.MESSAGE_LIMIT ?? '15',
+    minutesBetweenReports: process.env.MINUTES_BETWEEN_REPORTS ?? '30',
+  },
 };
 
 export default config;
