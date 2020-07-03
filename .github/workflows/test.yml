@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - develop
+      - master
 
 jobs:
   test:
@@ -26,6 +27,20 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build image and Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: docker.pkg.github.com/jvennik/discord-valorant-meister/valorant-meister
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          tags: develop,${{ github.sha }}
+  build-prod:
+    needs: test
+    runs-on: ubuntu-18.04
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build production image and Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: docker.pkg.github.com/jvennik/discord-valorant-meister/valorant-meister
