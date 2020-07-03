@@ -18,7 +18,6 @@ export default class ListCommand extends Command {
   public async run(msg: CommandoMessage): Promise<null> {
     if (msg.channel instanceof TextChannel) {
       await getEventsDetails({ guildId: msg.guild.id, channel: msg.channel });
-      await periodicMessage({ guildId: msg.guild.id, channel: msg.channel });
     }
 
     return null;
