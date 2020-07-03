@@ -26,13 +26,13 @@ export const getEventsDetails = async ({
     const posted = await channel.send(embed);
 
     await Promise.all(
-      events.map(async event => {
+      events.map(async (event) => {
         await posted.react(event.emoji);
       })
     );
 
     const emojiFilter = (reaction: MessageReaction): boolean =>
-      events.some(e => e.emoji === reaction.emoji.name);
+      events.some((e) => e.emoji === reaction.emoji.name);
 
     const collector = posted.createReactionCollector(emojiFilter, {
       time: 1000 * 60 * 10,
@@ -90,7 +90,7 @@ export const getEventsDetails = async ({
           // If the event is removed, repost the reactions
           await posted.reactions.removeAll();
           await Promise.all(
-            updatedEvents.map(async event => {
+            updatedEvents.map(async (event) => {
               await posted.react(event.emoji);
             })
           );
@@ -107,4 +107,3 @@ export const getEventsDetails = async ({
   }
   return;
 };
-

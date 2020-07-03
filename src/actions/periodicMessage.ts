@@ -1,7 +1,6 @@
-import { TextChannel } from 'discord.js';
-
 import { Event } from '../entity/Event';
 import { Guild } from '../entity/Guild';
+import { TextChannel } from 'discord.js';
 import config from '../config';
 import { getEventsDetails } from './report';
 import { getRepository } from 'typeorm';
@@ -42,7 +41,7 @@ export const periodicMessage = async ({
   });
 
   const recentBotMessage = latestMessages.find(
-    msg => msg.author.username === config.general.botUsername
+    (msg) => msg.author.username === config.general.botUsername
   );
 
   let shouldSend = true;

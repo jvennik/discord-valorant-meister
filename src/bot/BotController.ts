@@ -41,11 +41,10 @@ export class BotController {
       }
     });
 
-    this.client.on('error', error => {
+    this.client.on('error', (error) => {
       logger.error(`Something went wrong. Reason: ${error.message}`);
     });
   };
 }
 
 export default BotController;
-
