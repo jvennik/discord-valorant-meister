@@ -1,7 +1,9 @@
+import { Message, TextChannel } from 'discord.js';
 import { CommandoClient } from 'discord.js-commando';
 import config from '../config';
 import logger from '../logger';
 import { Commands } from './commands';
+import { periodicMessage } from '../actions/periodicMessage';
 
 export class BotController {
   public client = new CommandoClient({
@@ -31,10 +33,19 @@ export class BotController {
       }
     });
 
-    this.client.on('error', (error) => {
+    this.client.on('message', (msg: Message) => {
+      const channel = msg.channel as TextChannel;
+      const guild = msg.guild;
+      if (channel && guild) {
+        periodicMessage({ guildId: guild.id, channel: channel });
+      }
+    });
+
+    this.client.on('error', error => {
       logger.error(`Something went wrong. Reason: ${error.message}`);
     });
   };
 }
 
+export default BotController;
 export default BotController;

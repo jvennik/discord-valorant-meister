@@ -1,4 +1,4 @@
-import { TextChannel, MessageReaction } from 'discord.js';
+import { TextChannel, MessageReaction, Message } from 'discord.js';
 import { getRepository } from 'typeorm';
 import { Event } from '../entity/Event';
 import { createEmbed } from '../utils/create-embed';
@@ -13,7 +13,7 @@ export const getEventsDetails = async ({
 }: {
   guildId: string;
   channel: TextChannel;
-}): Promise<void> => {
+}): Promise<Message | undefined> => {
   const eventRepository = getRepository(Event);
   const events = await eventRepository.find({
     where: { guildId },
@@ -26,13 +26,13 @@ export const getEventsDetails = async ({
     const posted = await channel.send(embed);
 
     await Promise.all(
-      events.map(async (event) => {
+      events.map(async event => {
         await posted.react(event.emoji);
       })
     );
 
     const emojiFilter = (reaction: MessageReaction): boolean =>
-      events.some((e) => e.emoji === reaction.emoji.name);
+      events.some(e => e.emoji === reaction.emoji.name);
 
     const collector = posted.createReactionCollector(emojiFilter, {
       time: 1000 * 60 * 10,
@@ -90,7 +90,7 @@ export const getEventsDetails = async ({
           // If the event is removed, repost the reactions
           await posted.reactions.removeAll();
           await Promise.all(
-            updatedEvents.map(async (event) => {
+            updatedEvents.map(async event => {
               await posted.react(event.emoji);
             })
           );
@@ -101,7 +101,10 @@ export const getEventsDetails = async ({
     collector.on('end', async () => {
       await posted.reactions.removeAll();
     });
+    return posted;
   } catch (e) {
     logger.error('Something went wrong posting message', e);
   }
+  return;
 };
+
