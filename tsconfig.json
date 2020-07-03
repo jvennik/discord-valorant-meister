@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
+    "target": "es2019",
     "moduleResolution": "node",
     "module": "commonjs",
     "sourceMap": true,
     "rootDir": "src",
     "outDir": "dist",
-    "lib": ["ES2019"],
+    "lib": ["es2020"],
     "skipLibCheck": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -15,5 +15,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false
-  }
+  },
+  "include": ["src/**/*"]
 }

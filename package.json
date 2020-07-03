@@ -2,10 +2,10 @@
   "name": "discord-valorant-meister",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node dist",
-    "dev": "nodemon -e ts -x ts-node src/index.ts",
+    "start": "node dist/",
+    "dev": "TS_NODE=true nodemon -e ts -x ts-node src/index.ts",
     "debug": "nodemon -e ts -x ts-node --inspect src/index.ts",
     "build": "rimraf dist && tsc",
     "test": "yarn run lint",
