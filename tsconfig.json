@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "sourceMap": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "lib": ["es2020"],
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false
+  },
+  "include": ["src/**/*"]
+}

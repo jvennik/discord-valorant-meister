@@ -1,4 +1,8 @@
 node_modules/*
-config/production.json
 db.sqlite3
 .editorconfig
+
+# Typescript compiled
+dist/
+
+yarn-error.log
