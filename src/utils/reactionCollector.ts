@@ -6,6 +6,7 @@ import { getRepository } from 'typeorm';
 import { Player } from '../entity/Player';
 import leaveEvent, { LEAVE_RESULT } from '../actions/leave';
 import { Guild } from '../entity/Guild';
+import createPlayer from './create-player';
 
 export const addReactionCollector = async (
   msg: Message,
@@ -37,11 +38,17 @@ export const addReactionCollector = async (
     if (!msg.guild) {
       throw new Error('Guild missing from message');
     }
-
+    console.log(`IS ME`, reaction.me);
     // If the reaction is from the bot, ignore it
-    if (msg.author.bot) {
+    if (user.bot) {
       return;
     }
+
+    await createPlayer({
+      name: user.username,
+      discordId: user.id,
+      rank: 'iron1',
+    });
 
     const joinResult = await joinEvent({
       guildId: msg.guild.id,
