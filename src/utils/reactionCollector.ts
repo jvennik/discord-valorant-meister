@@ -38,7 +38,7 @@ export const addReactionCollector = async (
     if (!msg.guild) {
       throw new Error('Guild missing from message');
     }
-    console.log(`IS ME`, reaction.me);
+
     // If the reaction is from the bot, ignore it
     if (user.bot) {
       return;
