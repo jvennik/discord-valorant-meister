@@ -60,24 +60,10 @@ export const periodicMessage = async ({
   }
 
   if (shouldSend) {
-    if (guild.boundMessageId) {
-      const existingMessage = await channel.messages.fetch(
-        guild.boundMessageId
-      );
-
-      if (existingMessage) {
-        await existingMessage.delete();
-      }
-    }
-
-    const msg = await getEventsDetails({
+    await getEventsDetails({
       guildId: guildId,
       channel: channel,
     });
-    if (msg) {
-      guild.boundMessageId = msg.id;
-      guildRepository.save(guild);
-    }
   }
 };
 

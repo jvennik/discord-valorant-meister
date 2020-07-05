@@ -1,11 +1,10 @@
-import { TextChannel, MessageReaction, Message } from 'discord.js';
+import { TextChannel, Message } from 'discord.js';
 import { getRepository } from 'typeorm';
 import { Event } from '../entity/Event';
 import { createEmbed } from '../utils/create-embed';
-import joinEvent, { JOIN_RESULT } from './join';
-import leaveEvent, { LEAVE_RESULT } from './leave';
-import { Player } from '../entity/Player';
 import logger from '../logger';
+import { Guild } from '../entity/Guild';
+import { addReactionCollector } from '../utils/reactionCollector';
 
 export const getEventsDetails = async ({
   guildId,
@@ -15,6 +14,8 @@ export const getEventsDetails = async ({
   channel: TextChannel;
 }): Promise<Message | undefined> => {
   const eventRepository = getRepository(Event);
+  const guildRepository = getRepository(Guild);
+  const guild = await guildRepository.findOne({ guildId });
   const events = await eventRepository.find({
     where: { guildId },
     relations: ['players'],
@@ -22,85 +23,28 @@ export const getEventsDetails = async ({
 
   const embed = createEmbed(events);
 
+  if (!guild) {
+    throw new Error('Guild not found when trying to fetch event details');
+  }
+
+  if (guild.boundMessageId) {
+    try {
+      const existingMessage = await channel.messages.fetch(
+        guild.boundMessageId
+      );
+
+      await existingMessage.delete();
+    } catch (e) {
+      logger.error('Exiting message didnt exist. Skipping deletion.');
+    }
+  }
+
   try {
     const posted = await channel.send(embed);
+    guild.boundMessageId = posted.id;
+    await guildRepository.save(guild);
 
-    await Promise.all(
-      events.map(async (event) => {
-        await posted.react(event.emoji);
-      })
-    );
-
-    const emojiFilter = (reaction: MessageReaction): boolean =>
-      events.some((e) => e.emoji === reaction.emoji.name);
-
-    const collector = posted.createReactionCollector(emojiFilter, {
-      time: 1000 * 60 * 10,
-      dispose: true,
-    });
-
-    collector.on('collect', async (reaction, user) => {
-      const joinResult = await joinEvent({
-        guildId,
-        discordId: user.id,
-        emoji: reaction.emoji.name,
-      });
-
-      if (joinResult === JOIN_RESULT.JOINED) {
-        const updatedEvents = await eventRepository.find({
-          where: { guildId },
-          relations: ['players'],
-          cache: false,
-        });
-        posted.edit(createEmbed(updatedEvents));
-      }
-    });
-
-    collector.on('remove', async (reaction, user) => {
-      const playerRepository = getRepository(Player);
-
-      const player = await playerRepository.findOne({
-        where: { discordId: user.id },
-        relations: ['joinedEvent'],
-      });
-
-      // if there is no player info or if the emoji being removed doesnt match, do nothing
-      if (!player || player.joinedEvent.emoji !== reaction.emoji.name) {
-        return;
-      }
-
-      const leave = await leaveEvent({
-        discordId: user.id,
-        guildId,
-      });
-
-      if (
-        leave.result === LEAVE_RESULT.LEFT_EVENT ||
-        leave.result === LEAVE_RESULT.TRANSFERRED ||
-        leave.result === LEAVE_RESULT.EVENT_REMOVED
-      ) {
-        const updatedEvents = await eventRepository.find({
-          where: { guildId },
-          relations: ['players'],
-          cache: false,
-        });
-        posted.edit(createEmbed(updatedEvents));
-
-        if (leave.result === LEAVE_RESULT.EVENT_REMOVED) {
-          // If the event is removed, repost the reactions
-          await posted.reactions.removeAll();
-          await Promise.all(
-            updatedEvents.map(async (event) => {
-              await posted.react(event.emoji);
-            })
-          );
-        }
-      }
-    });
-
-    collector.on('end', async () => {
-      await posted.reactions.removeAll();
-    });
+    await addReactionCollector(posted, events);
     return posted;
   } catch (e) {
     logger.error('Something went wrong posting message', e);
