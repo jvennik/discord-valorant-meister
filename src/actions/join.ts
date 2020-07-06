@@ -39,13 +39,12 @@ export enum JOIN_RESULT {
 }
 
 export const joinEvent = async ({
-  guildId,
   discordId,
-  emoji,
+  event,
 }: {
   guildId: string;
   discordId: string;
-  emoji: string;
+  event: Event;
 }): Promise<JOIN_RESULT> => {
   const playerRepository = getRepository(Player);
   const eventRepository = getRepository(Event);
@@ -57,11 +56,6 @@ export const joinEvent = async ({
   if (!player) {
     throw new Error('Player data not found when trying to join event');
   }
-
-  const event = await eventRepository.findOne({
-    where: { emoji, guildId },
-    relations: ['players'],
-  });
 
   if (!event) {
     logger.info('Event does not exist');
