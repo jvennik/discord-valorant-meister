@@ -17,9 +17,6 @@ export class Event {
   public name: string;
 
   @Column()
-  public emoji: string;
-
-  @Column()
   public guildId: string;
 
   @Column()

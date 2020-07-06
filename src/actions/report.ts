@@ -18,7 +18,7 @@ export const getEventsDetails = async ({
   const guild = await guildRepository.findOne({ guildId });
   const events = await eventRepository.find({
     where: { guildId },
-    relations: ['players'],
+    relations: ['players', 'owner'],
   });
 
   const embed = createEmbed(events);

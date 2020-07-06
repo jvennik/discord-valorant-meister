@@ -3,6 +3,8 @@ import createPlayer from '../../../utils/create-player';
 import joinEvent, { JOIN_RESULT } from '../../../actions/join';
 import { Message } from 'discord.js';
 import { isBound } from '../../../utils/isBound';
+import { getRepository } from 'typeorm';
+import { Event } from '../../../entity/Event';
 
 export default class JoinCommand extends Command {
   public constructor(client: CommandoClient) {
@@ -13,8 +15,8 @@ export default class JoinCommand extends Command {
       description: 'Join an existing group',
       args: [
         {
-          key: 'emoji',
-          prompt: 'Please enter the emoji of the group you wish to join',
+          key: 'name',
+          prompt: 'Please type the name of the event you wish to join',
           type: 'string',
         },
       ],
@@ -23,7 +25,7 @@ export default class JoinCommand extends Command {
 
   public async run(
     msg: CommandoMessage,
-    { emoji }: { emoji: string }
+    { name }: { name: string }
   ): Promise<Message> {
     const bindResult = await isBound(msg);
     if (!bindResult) {
@@ -37,10 +39,21 @@ export default class JoinCommand extends Command {
       rank: 'iron1',
     });
 
+    const eventRepository = getRepository(Event);
+
+    const event = await eventRepository.findOne({
+      where: { name },
+      relations: ['players'],
+    });
+
+    if (!event) {
+      return msg.channel.send('Event not found!');
+    }
+
     const didJoin = await joinEvent({
       guildId: msg.guild.id,
       discordId: msg.member.id,
-      emoji: emoji.toString(),
+      event,
     });
 
     if (didJoin === JOIN_RESULT.JOINED) {
