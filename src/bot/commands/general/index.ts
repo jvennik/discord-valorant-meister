@@ -4,6 +4,8 @@ import LeaveCommand from './leave';
 import JoinCommand from './join';
 import BindCommand from './bind';
 import UnbindCommand from './unbind';
+import DisbandCommand from './disband';
+import TransferCommand from './transfer';
 
 export const GeneralCommands = [
   ListCommand,
@@ -12,4 +14,6 @@ export const GeneralCommands = [
   JoinCommand,
   BindCommand,
   UnbindCommand,
+  DisbandCommand,
+  TransferCommand,
 ];
