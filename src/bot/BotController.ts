@@ -14,7 +14,10 @@ export class BotController {
   public connect = (): void => {
     this.client.registry
       .registerDefaultTypes()
-      .registerGroups([['general', 'General Commands']])
+      .registerGroups([
+        ['general', 'General Commands'],
+        ['admin', 'Admin Commands'],
+      ])
       .registerDefaultGroups()
       .registerDefaultCommands({
         eval: false,
