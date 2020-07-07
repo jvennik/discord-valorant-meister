@@ -3,20 +3,6 @@ import { Player } from '../entity/Player';
 import { Event } from '../entity/Event';
 import logger from '../logger';
 
-const numberToEmoji = {
-  0: '0️⃣',
-  1: '1️⃣',
-  2: '2️⃣',
-  3: '3️⃣',
-  4: '4️⃣',
-  5: '5️⃣',
-  6: '6️⃣',
-  7: '7️⃣',
-  8: '8️⃣',
-  9: '9️⃣',
-  10: '🔟',
-};
-
 export enum EVENT_RESULT {
   CREATED,
   MAX,
@@ -55,14 +41,11 @@ export const createEvent = async ({
   }
 
   const guildEventCount = await eventRepository.count({ where: guildId });
-  const newEventNumber = guildEventCount as keyof typeof numberToEmoji;
 
-  if (newEventNumber <= 10) {
-    const emoji = numberToEmoji[newEventNumber];
+  if (guildEventCount <= 10) {
     const newEvent = new Event({
       guildId,
       name,
-      emoji,
       rank: 'iron1',
       owner: player,
       players: [player],

@@ -14,9 +14,17 @@ export class BotController {
   public connect = (): void => {
     this.client.registry
       .registerDefaultTypes()
-      .registerGroups([['general', 'General Commands']])
+      .registerGroups([
+        ['general', 'General Commands'],
+        ['admin', 'Admin Commands'],
+      ])
       .registerDefaultGroups()
-      .registerDefaultCommands()
+      .registerDefaultCommands({
+        eval: false,
+        commandState: false,
+        ping: false,
+        prefix: false,
+      })
       .registerCommands(Commands);
 
     this.client.login(config.general.botToken);
@@ -50,5 +58,7 @@ export class BotController {
     });
   };
 }
+
+export const bot = new BotController();
 
 export default BotController;

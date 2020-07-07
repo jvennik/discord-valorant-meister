@@ -7,6 +7,7 @@ import { Player } from '../entity/Player';
 import leaveEvent, { LEAVE_RESULT } from '../actions/leave';
 import { Guild } from '../entity/Guild';
 import createPlayer from './create-player';
+import { getNumberEmoji, numberToEmoji, getIndexFromEmoji } from './emoji';
 
 export const addReactionCollector = async (
   msg: Message,
@@ -21,13 +22,13 @@ export const addReactionCollector = async (
   const guildRepository = getRepository(Guild);
   const guild = await guildRepository.findOne({ guildId: msg.guild.id });
   await Promise.all(
-    events.map(async (event) => {
-      await msg.react(event.emoji);
+    events.map(async (_event, index) => {
+      await msg.react(getNumberEmoji(index));
     })
   );
 
   const emojiFilter = (reaction: MessageReaction): boolean =>
-    events.some((e) => e.emoji === reaction.emoji.name);
+    numberToEmoji.some((e) => e === reaction.emoji.name);
 
   const collector = msg.createReactionCollector(emojiFilter, {
     time: 1000 * 60 * 30,
@@ -50,16 +51,23 @@ export const addReactionCollector = async (
       rank: 'iron1',
     });
 
+    const events = await eventRepository.find({ relations: ['players'] });
+    const event = events[getIndexFromEmoji(reaction.emoji.name)];
+
+    if (!event) {
+      return;
+    }
+
     const joinResult = await joinEvent({
       guildId: msg.guild.id,
       discordId: user.id,
-      emoji: reaction.emoji.name,
+      event,
     });
 
     if (joinResult === JOIN_RESULT.JOINED) {
       const updatedEvents = await eventRepository.find({
         where: { guildId: msg.guild.id },
-        relations: ['players'],
+        relations: ['players', 'owner'],
         cache: false,
       });
       msg.edit(createEmbed(updatedEvents));
@@ -77,8 +85,14 @@ export const addReactionCollector = async (
       relations: ['joinedEvent'],
     });
 
-    // if there is no player info or if the emoji being removed doesnt match, do nothing
-    if (!player || player.joinedEvent.emoji !== reaction.emoji.name) {
+    // if there is no player info, do nothing
+    if (!player) {
+      return;
+    }
+    const eventIndex = events.findIndex((e) => e.id === player.joinedEvent.id);
+
+    // If the events index emoji does not match the reaction we are removing, do nothing
+    if (getNumberEmoji(eventIndex) !== reaction.emoji.name) {
       return;
     }
 
@@ -94,7 +108,7 @@ export const addReactionCollector = async (
     ) {
       const updatedEvents = await eventRepository.find({
         where: { guildId: msg.guild.id },
-        relations: ['players'],
+        relations: ['players', 'owner'],
         cache: false,
       });
       msg.edit(createEmbed(updatedEvents));
@@ -103,8 +117,8 @@ export const addReactionCollector = async (
         // If the event is removed, repost the reactions
         await msg.reactions.removeAll();
         await Promise.all(
-          updatedEvents.map(async (event) => {
-            await msg.react(event.emoji);
+          updatedEvents.map(async (_event, index) => {
+            await msg.react(getNumberEmoji(index));
           })
         );
       }

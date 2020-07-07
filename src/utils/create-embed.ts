@@ -1,28 +1,38 @@
 import { Event } from '../entity/Event';
 import { MessageEmbed, EmbedField } from 'discord.js';
+import { getPlayerName } from './playerUtils';
+import { getNumberEmoji } from './emoji';
 
 export const createEmbed = (events: Event[]): MessageEmbed => {
   const fields: EmbedField[] = [];
-  events.forEach((event) => {
-    const players = event.players
+  events.forEach((event, index) => {
+    // Manually sort the players by last updated date
+    const sortedPlayers = event.players.sort(
+      (a, b) => a.updatedAt.getTime() - b.updatedAt.getTime()
+    );
+    const players = sortedPlayers
       .slice(0, 5)
-      .map((p) => p.name)
+      .map((p) =>
+        event.owner.id === p.id
+          ? `**${getPlayerName(event.guildId, p.discordId)}**`
+          : getPlayerName(event.guildId, p.discordId)
+      )
       .join(', ');
 
     let waitingPlayers;
-    if (event.players.length > 5) {
-      waitingPlayers = event.players
+    if (sortedPlayers.length > 5) {
+      waitingPlayers = sortedPlayers
         .slice(5)
-        .map((p) => p.name)
+        .map((p) => getPlayerName(event.guildId, p.discordId))
         .join(', ');
     }
 
-    const totalPlayers = event.players.length > 5 ? 5 : event.players.length;
+    const totalPlayers = sortedPlayers.length > 5 ? 5 : sortedPlayers.length;
     const totalWaiting =
-      event.players.length <= 5 ? 0 : event.players.length - 5;
+      sortedPlayers.length <= 5 ? 0 : sortedPlayers.length - 5;
 
     fields.push({
-      name: `${event.emoji} ${event.name}`,
+      name: `${getNumberEmoji(index)} ${event.name}`,
       value: `${totalPlayers}/5 (${totalWaiting} waiting)  - ${players}${
         waitingPlayers ? ` (${waitingPlayers})` : ''
       }`,
@@ -31,13 +41,16 @@ export const createEmbed = (events: Event[]): MessageEmbed => {
   });
 
   return new MessageEmbed({
-    color: 3447003,
     author: {
-      name: 'ValorantMeister',
+      name: 'Valorant Meister',
     },
-    title: 'Active events',
-    description: 'Click the corresponding group number reaction to join/queue',
+    title: events.length > 0 ? 'Active events' : 'Currently no active events',
+    description:
+      events.length > 0
+        ? 'Click the corresponding group number reaction to join/queue'
+        : 'Create an event with `!valorant create <group name>`',
     fields: fields,
     timestamp: new Date(),
+    color: 16722253,
   });
 };

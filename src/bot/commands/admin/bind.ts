@@ -7,7 +7,7 @@ export default class BindCommand extends Command {
     super(client, {
       name: 'bind',
       memberName: 'bind',
-      group: 'general',
+      group: 'admin',
       guildOnly: true,
       userPermissions: ['MANAGE_MESSAGES'],
       description:

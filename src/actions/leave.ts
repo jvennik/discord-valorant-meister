@@ -43,12 +43,11 @@ export const leaveEvent = async ({
         msg: `**${player.joinedEvent.name}** has been removed`,
       };
     } else {
-      const newOwner = player.joinedEvent.players.find(
-        (p) => p.id !== player.id
+      const sortedPlayers = player.joinedEvent.players.sort(
+        (a, b) => a.updatedAt.getTime() - b.updatedAt.getTime()
       );
-      const newPlayers = player.joinedEvent.players.filter(
-        (p) => p.id !== player.id
-      );
+      const newOwner = sortedPlayers.find((p) => p.id !== player.id);
+      const newPlayers = sortedPlayers.filter((p) => p.id !== player.id);
 
       if (!newOwner || newPlayers.length === 0) {
         await eventRepository.delete(player.joinedEvent.id);
@@ -59,6 +58,8 @@ export const leaveEvent = async ({
       }
       player.joinedEvent.players = newPlayers;
       player.joinedEvent.owner = newOwner;
+
+      await eventRepository.save(player.joinedEvent);
 
       let msg = `**${player.name}** has left event: **${player.joinedEvent.name}**.\n`;
       msg += `Ownership transferred to: **${newOwner.name}**`;

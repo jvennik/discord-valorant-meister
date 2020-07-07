@@ -10,7 +10,8 @@
     "build": "rimraf dist && tsc",
     "test": "yarn run lint",
     "lint": "eslint \"src/**/*.{js,ts}\" --ignore-path .gitignore",
-    "migration:generate": "TS_NODE=true ts-node ./node_modules/.bin/typeorm migration:generate"
+    "migration:generate": "TS_NODE=true ts-node ./node_modules/.bin/typeorm migration:generate",
+    "migration:run": "TS_NODE=true ts-node ./node_modules/.bin/typeorm migration:run"
   },
   "author": "sct",
   "license": "MIT",
