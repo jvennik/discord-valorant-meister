@@ -7,7 +7,7 @@ export default class UnbindCommand extends Command {
     super(client, {
       name: 'unbind',
       memberName: 'unbind',
-      group: 'general',
+      group: 'admin',
       description: 'Unbind from any currently bound channel',
       guildOnly: true,
       userPermissions: ['MANAGE_MESSAGES'],

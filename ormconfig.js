@@ -25,4 +25,6 @@ const prodConfig = {
   },
 };
 
-module.exports = process.env.TS_NODE ? devConfig : prodConfig;
+const finalConfig = process.env.TS_NODE ? devConfig : prodConfig;
+
+module.exports = finalConfig;
