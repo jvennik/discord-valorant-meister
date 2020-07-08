@@ -2,7 +2,7 @@ import { Event } from '../entity/Event';
 import { Guild } from '../entity/Guild';
 import { TextChannel } from 'discord.js';
 import config from '../config';
-import { getEventsDetails } from './report';
+import { getEventsDetails } from './eventDetails';
 import { getRepository } from 'typeorm';
 import logger from '../logger';
 

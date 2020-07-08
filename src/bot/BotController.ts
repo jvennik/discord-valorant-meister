@@ -44,7 +44,13 @@ export class BotController {
     this.client.on('message', (msg: Message) => {
       const channel = msg.channel;
       const guild = msg.guild;
-      if (channel instanceof TextChannel && guild && this.client.user) {
+      if (
+        channel instanceof TextChannel &&
+        guild &&
+        this.client.user &&
+        // Ignore all bot messages
+        !msg.author.bot
+      ) {
         periodicMessage({
           guildId: guild.id,
           channel: channel,

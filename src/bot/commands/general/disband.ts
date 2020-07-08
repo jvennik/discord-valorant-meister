@@ -1,8 +1,9 @@
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import createPlayer from '../../../utils/create-player';
 import { isBound } from '../../../utils/isBound';
-import disbandEvent from '../../../actions/disband';
+import disbandEvent, { DISBAND_RESULT } from '../../../actions/disband';
+import { getEventsDetails } from '../../../actions/eventDetails';
 
 export default class DisbandCommand extends Command {
   public constructor(client: CommandoClient) {
@@ -33,6 +34,12 @@ export default class DisbandCommand extends Command {
       discordId: msg.member.id,
       guildId: msg.guild.id,
     });
+
+    if (response.result === DISBAND_RESULT.EVENT_REMOVED) {
+      if (msg.channel instanceof TextChannel) {
+        await getEventsDetails({ guildId: msg.guild.id, channel: msg.channel });
+      }
+    }
 
     return msg.channel.send(response.msg);
   }
