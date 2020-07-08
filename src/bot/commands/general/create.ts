@@ -1,8 +1,9 @@
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import createPlayer from '../../../utils/create-player';
 import createEvent, { EVENT_RESULT } from '../../../actions/create';
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { isBound } from '../../../utils/isBound';
+import { getEventsDetails } from '../../../actions/eventDetails';
 
 export default class CreateCommand extends Command {
   public constructor(client: CommandoClient) {
@@ -43,7 +44,15 @@ export default class CreateCommand extends Command {
       owner: msg.member.id,
     });
     if (response === EVENT_RESULT.CREATED) {
-      return msg.channel.send(`Created event: ${eventName}`);
+      if (msg.channel instanceof TextChannel) {
+        const posted = await getEventsDetails({
+          guildId: msg.guild.id,
+          channel: msg.channel,
+        });
+        if (posted) {
+          return msg.channel.send(`Event **${eventName}** created`);
+        }
+      }
     } else if (response === EVENT_RESULT.ALREADY_OWNED) {
       return msg.channel.send(
         `${msg.member.displayName}, you already own an event`
