@@ -1,7 +1,8 @@
 import { CommandoClient, Command, CommandoMessage } from 'discord.js-commando';
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { getRepository } from 'typeorm';
 import { Event } from '../../../entity/Event';
+import { getEventsDetails } from '../../../actions/eventDetails';
 
 export default class DestroyCommand extends Command {
   public constructor(client: CommandoClient) {
@@ -33,10 +34,14 @@ export default class DestroyCommand extends Command {
     });
 
     if (!event) {
-      return msg.channel.send('Unknown group');
+      return msg.channel.send('Unknown event');
     }
 
     await eventRepository.delete(event);
+
+    if (msg.channel instanceof TextChannel) {
+      await getEventsDetails({ guildId: msg.guild.id, channel: msg.channel });
+    }
 
     return msg.channel.send(`Deleted event: **${event.name}**`);
   }

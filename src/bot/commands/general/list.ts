@@ -1,7 +1,7 @@
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 
 import { TextChannel } from 'discord.js';
-import { getEventsDetails } from '../../../actions/report';
+import { getEventsDetails } from '../../../actions/eventDetails';
 
 export default class ListCommand extends Command {
   public constructor(client: CommandoClient) {

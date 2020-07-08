@@ -1,21 +1,34 @@
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
-import { Message, TextChannel } from 'discord.js';
+import { GuildMember, Message, TextChannel } from 'discord.js';
 import leaveEvent, { LEAVE_RESULT } from '../../../actions/leave';
 import { getEventsDetails } from '../../../actions/eventDetails';
 
-export default class LeaveCommand extends Command {
+export default class RemoveCommand extends Command {
   public constructor(client: CommandoClient) {
     super(client, {
-      name: 'leave',
-      memberName: 'leave',
-      group: 'general',
-      description: 'Leave the group you are currently in',
+      name: 'remove',
+      memberName: 'remove',
+      group: 'admin',
+      guildOnly: true,
+      description:
+        'Remove a user from any event. Same as forcing them to leave the event. If they are the last user, the event will be disbanded.',
+      userPermissions: ['MANAGE_MESSAGES'],
+      args: [
+        {
+          key: 'member',
+          prompt: 'Provide the user you wish to remove',
+          type: 'member',
+        },
+      ],
     });
   }
 
-  public async run(msg: CommandoMessage): Promise<Message> {
+  public async run(
+    msg: CommandoMessage,
+    { member }: { member: GuildMember }
+  ): Promise<Message> {
     const response = await leaveEvent({
-      discordId: msg.member.id,
+      discordId: member.id,
       guildId: msg.guild.id,
     });
 
