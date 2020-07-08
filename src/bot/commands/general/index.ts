@@ -5,6 +5,7 @@ import JoinCommand from './join';
 import UnbindCommand from './unbind';
 import DisbandCommand from './disband';
 import TransferCommand from './transfer';
+import KickCommand from './kick';
 
 export const GeneralCommands = [
   ListCommand,
@@ -14,4 +15,5 @@ export const GeneralCommands = [
   UnbindCommand,
   DisbandCommand,
   TransferCommand,
+  KickCommand,
 ];
