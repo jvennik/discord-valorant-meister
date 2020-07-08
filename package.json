@@ -1,17 +1,17 @@
 {
   "name": "discord-valorant-meister",
-  "version": "1.0.0",
+  "version": "0.1.6",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/",
-    "dev": "TS_NODE=true nodemon -e ts -x ts-node src/index.ts",
+    "dev": "TS_NODE=true nodemon -e ts -x ts-node --project src/tsconfig.json src/index.ts",
     "debug": "nodemon -e ts -x ts-node --inspect src/index.ts",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc --build src",
     "test": "yarn run lint",
     "lint": "eslint \"src/**/*.{js,ts}\" --ignore-path .gitignore",
-    "migration:generate": "TS_NODE=true ts-node ./node_modules/.bin/typeorm migration:generate",
-    "migration:run": "TS_NODE=true ts-node ./node_modules/.bin/typeorm migration:run"
+    "migration:generate": "TS_NODE=true ts-node --project src/tsconfig.json ./node_modules/.bin/typeorm migration:generate",
+    "migration:run": "TS_NODE=true ts-node --project src/tsconfig.json ./node_modules/.bin/typeorm migration:run"
   },
   "author": "sct",
   "license": "MIT",

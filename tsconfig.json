@@ -1,20 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "moduleResolution": "node",
-    "module": "commonjs",
-    "sourceMap": true,
-    "rootDir": "src",
-    "outDir": "dist",
-    "lib": ["es2020"],
-    "skipLibCheck": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "strictPropertyInitialization": false
+    "rootDir": ".",
+    "outDir": ".", // if out path for a file is same as its src path, nothing will be emitted
+    "resolveJsonModule": true,
+    "composite": true // required on the dependency project for references to work
   },
-  "include": ["src/**/*"]
+  "files": ["package.json"]
 }
