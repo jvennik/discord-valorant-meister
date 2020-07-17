@@ -5,7 +5,6 @@ import { createEmbed } from '../utils/create-embed';
 import logger from '../logger';
 import { Guild } from '../entity/Guild';
 import { addReactionCollector } from '../utils/reactionCollector';
-import { bot } from '../bot/BotController';
 
 export const getEventsDetails = async ({
   guildId,
@@ -42,9 +41,6 @@ export const getEventsDetails = async ({
 
   try {
     const posted = await channel.send(embed);
-    bot.client.user?.setPresence({
-      activity: { name: `Events: ${events.length}` },
-    });
     guild.boundMessageId = posted.id;
     await guildRepository.save(guild);
 

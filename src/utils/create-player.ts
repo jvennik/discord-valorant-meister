@@ -1,32 +1,38 @@
 import { getRepository } from 'typeorm';
 import { Player } from '../entity/Player';
-import logger from '../logger';
 
 export const createPlayer = async function createPlayer({
   name,
   discordId,
   rank,
+  relations,
 }: {
   name: string;
   discordId: string;
   rank: string;
-}): Promise<void> {
+  // Optional relations to query for
+  relations?: string[];
+}): Promise<Player> {
   try {
     const playerRepository = getRepository(Player);
-    const playerExists = await playerRepository.count({
+    const player = await playerRepository.findOne({
       where: { discordId },
+      relations,
     });
 
-    if (!playerExists) {
+    if (!player) {
       const newPlayer = new Player({
         name,
         discordId,
         rank,
       });
       await playerRepository.save(newPlayer);
+      return newPlayer;
     }
+
+    return player;
   } catch (e) {
-    logger.error('Something went wrong creating a player', e);
+    throw e;
   }
 };
 
