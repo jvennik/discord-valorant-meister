@@ -36,7 +36,7 @@ export class BotController {
       if (this.client.user) {
         this.client.user.setUsername(config.general.botUsername);
         this.client.user.setPresence({
-          activity: { name: 'ABENO' },
+          activity: { name: '!valorant help' },
         });
       }
     });
