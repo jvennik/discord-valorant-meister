@@ -1,28 +1,28 @@
 {
   "name": "discord-valorant-meister",
-  "version": "1.0.0",
+  "version": "0.1.6",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/",
-    "dev": "TS_NODE=true nodemon -e ts -x ts-node src/index.ts",
+    "dev": "TS_NODE=true nodemon -e ts -x ts-node --project src/tsconfig.json src/index.ts",
     "debug": "nodemon -e ts -x ts-node --inspect src/index.ts",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc --build src",
     "test": "yarn run lint",
     "lint": "eslint \"src/**/*.{js,ts}\" --ignore-path .gitignore",
-    "migration:generate": "TS_NODE=true ts-node ./node_modules/.bin/typeorm migration:generate",
-    "migration:run": "TS_NODE=true ts-node ./node_modules/.bin/typeorm migration:run"
+    "migration:generate": "TS_NODE=true ts-node --project src/tsconfig.json ./node_modules/.bin/typeorm migration:generate",
+    "migration:run": "TS_NODE=true ts-node --project src/tsconfig.json ./node_modules/.bin/typeorm migration:run"
   },
   "author": "sct",
   "license": "MIT",
   "devDependencies": {
     "@types/config": "^0.0.36",
-    "@types/node": "^14.0.14",
+    "@types/node": "^14.0.24",
     "@types/sqlite3": "^3.1.6",
-    "@typescript-eslint/eslint-plugin": "^3.4.0",
-    "@typescript-eslint/parser": "^3.4.0",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
     "babel-eslint": "^10.0.1",
-    "eslint": "^7.3.1",
+    "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prettier": "^3.1.4",
@@ -31,13 +31,13 @@
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "discord.js": "^12.2.0",
     "discord.js-commando": "discordjs/Commando",
     "reflect-metadata": "^0.1.13",
-    "sqlite3": "^4.1.1",
+    "sqlite3": "^5.0.0",
     "typeorm": "^0.2.25",
     "winston": "^3.3.3"
   },

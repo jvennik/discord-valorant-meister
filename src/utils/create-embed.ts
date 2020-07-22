@@ -2,9 +2,10 @@ import { Event } from '../entity/Event';
 import { MessageEmbed, EmbedField } from 'discord.js';
 import { getPlayerName } from './playerUtils';
 import { getNumberEmoji } from './emoji';
+import { REMOVAL_EMOJI } from './reactionCollector';
 
 export const createEmbed = (events: Event[]): MessageEmbed => {
-  const fields: EmbedField[] = [];
+  const eventFields: EmbedField[] = [];
   events.forEach((event, index) => {
     // Manually sort the players by last updated date
     const sortedPlayers = event.players.sort(
@@ -31,7 +32,7 @@ export const createEmbed = (events: Event[]): MessageEmbed => {
     const totalWaiting =
       sortedPlayers.length <= 5 ? 0 : sortedPlayers.length - 5;
 
-    fields.push({
+    eventFields.push({
       name: `${getNumberEmoji(index)} ${event.name}`,
       value: `${totalPlayers}/5 (${totalWaiting} waiting)  - ${players}${
         waitingPlayers ? ` (${waitingPlayers})` : ''
@@ -47,9 +48,9 @@ export const createEmbed = (events: Event[]): MessageEmbed => {
     title: events.length > 0 ? 'Active events' : 'Currently no active events',
     description:
       events.length > 0
-        ? 'Click the corresponding group number reaction to join/queue'
+        ? `Click the corresponding group number reaction to join/queue. Click the ${REMOVAL_EMOJI} to leave any event you are currently in.`
         : 'Create an event with `!valorant create <group name>`',
-    fields: fields,
+    fields: eventFields,
     timestamp: new Date(),
     color: 16722253,
   });
