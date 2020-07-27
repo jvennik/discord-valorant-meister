@@ -9,7 +9,7 @@ export default class NotifyCommand extends Command {
     super(client, {
       name: 'notify',
       memberName: 'notify',
-      group: 'general',
+      group: 'admin',
       description:
         'Specify a role to notify when a new event is created in the channel.',
       guildOnly: true,
