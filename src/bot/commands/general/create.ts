@@ -4,8 +4,6 @@ import createEvent, { EVENT_RESULT } from '../../../actions/create';
 import { Message, TextChannel } from 'discord.js';
 import { isBound } from '../../../utils/isBound';
 import { getEventsDetails } from '../../../actions/eventDetails';
-import { getRepository } from 'typeorm';
-import { Guild } from '../../../entity/Guild';
 
 export default class CreateCommand extends Command {
   public constructor(client: CommandoClient) {
@@ -47,20 +45,13 @@ export default class CreateCommand extends Command {
     });
     if (response === EVENT_RESULT.CREATED) {
       if (msg.channel instanceof TextChannel) {
-        const guildRepository = getRepository(Guild);
-        const guild = await guildRepository.findOneOrFail({
-          where: { guildId: msg.guild.id },
-        });
         const posted = await getEventsDetails({
           guildId: msg.guild.id,
           channel: msg.channel,
+          shouldNotify: true,
         });
         if (posted) {
-          return msg.channel.send(
-            `Event **${eventName}** created!${
-              guild.boundRoleId ? `<@&${guild.boundRoleId}>` : ''
-            }`
-          );
+          return msg.channel.send(`Event **${eventName}** created!`);
         }
       }
     } else if (response === EVENT_RESULT.ALREADY_OWNED) {
