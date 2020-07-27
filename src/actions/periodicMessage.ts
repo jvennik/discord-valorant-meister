@@ -45,19 +45,7 @@ export const periodicMessage = async ({
   const recentBotMessage = latestMessages.find(
     (msg) => msg.author.id === botId
   );
-
-  let shouldSend = true;
-  if (recentBotMessage) {
-    const msgTimestamp: Date = new Date(recentBotMessage.createdTimestamp);
-    const now = new Date();
-
-    const difference = now.getTime() - msgTimestamp.getTime();
-    const minutes = Math.floor(difference / 1000 / 60);
-
-    if (minutes < Number(config.events.minutesBetweenReports)) {
-      shouldSend = false;
-    }
-  }
+  const shouldSend = recentBotMessage ? false : true;
 
   if (shouldSend) {
     await getEventsDetails({
