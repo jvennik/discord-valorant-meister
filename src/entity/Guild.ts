@@ -14,6 +14,9 @@ export class Guild {
   @Column({ type: 'varchar', name: 'boundMessageId', nullable: true })
   public boundMessageId?: string | null;
 
+  @Column({ type: 'varchar', name: 'boundRoleId', nullable: true })
+  public boundRoleId?: string | null;
+
   constructor(init?: Partial<Guild>) {
     Object.assign(this, init);
   }

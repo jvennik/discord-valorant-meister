@@ -7,6 +7,7 @@ import TransferCommand from './transfer';
 import KickCommand from './kick';
 import InfoCommand from './info';
 import BumpCommand from './bump';
+import NotifyCommand from './notify';
 
 export const GeneralCommands = [
   ListCommand,
@@ -18,4 +19,5 @@ export const GeneralCommands = [
   KickCommand,
   InfoCommand,
   BumpCommand,
+  NotifyCommand,
 ];
