@@ -9,13 +9,15 @@ import { addReactionCollector } from '../utils/reactionCollector';
 export const getEventsDetails = async ({
   guildId,
   channel,
+  shouldNotify,
 }: {
   guildId: string;
   channel: TextChannel;
+  shouldNotify?: boolean;
 }): Promise<Message | undefined> => {
   const eventRepository = getRepository(Event);
   const guildRepository = getRepository(Guild);
-  const guild = await guildRepository.findOne({ guildId });
+  const guild = await guildRepository.findOneOrFail({ guildId });
   const events = await eventRepository.find({
     where: { guildId },
     relations: ['players', 'owner'],
@@ -43,6 +45,10 @@ export const getEventsDetails = async ({
     const posted = await channel.send(embed);
     guild.boundMessageId = posted.id;
     await guildRepository.save(guild);
+
+    if (shouldNotify && guild.boundRoleId) {
+      await channel.send(`<@&${guild.boundRoleId}>`);
+    }
 
     await addReactionCollector(posted, events);
     return posted;

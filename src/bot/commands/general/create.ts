@@ -48,9 +48,10 @@ export default class CreateCommand extends Command {
         const posted = await getEventsDetails({
           guildId: msg.guild.id,
           channel: msg.channel,
+          shouldNotify: true,
         });
         if (posted) {
-          return msg.channel.send(`Event **${eventName}** created`);
+          return msg.channel.send(`Event **${eventName}** created!`);
         }
       }
     } else if (response === EVENT_RESULT.ALREADY_OWNED) {
