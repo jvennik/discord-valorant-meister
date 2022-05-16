@@ -37,7 +37,7 @@
     "discord.js": "^12.2.0",
     "discord.js-commando": "discordjs/Commando",
     "reflect-metadata": "^0.1.13",
-    "sqlite3": "^5.0.0",
+    "sqlite3": "^5.0.3",
     "typeorm": "^0.2.25",
     "winston": "^3.3.3"
   },
